@@ -41,6 +41,7 @@ if($_SESSION["id"] == true){
                 <?php
                 echo "<img src='../../db-images/users/$image'>";
                 ?>
+                <!-- <img src="../images/p1.png"> -->
                 <?php echo "$image"?>
             </div>
         </div>

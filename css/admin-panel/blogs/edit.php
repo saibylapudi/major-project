@@ -8,7 +8,27 @@ if($_SESSION["id"] == true){
     $image = $_SESSION["image"];
 
     require_once('../../config.php');
+
+    $msg = "";
+
+    if($_SERVER["REQUEST_METHOD"] == "GET"){
+        if(!isset($_GET["id"])){
+            header("location: index.php");
+            exit;
+        }
+
+        $id = $_GET["id"];
+        $sql = mysqli_query($db,"SELECT * FROM `blogs` WHERE id=$id");
+        $row = mysqli_fetch_assoc($sql);
+
+        $title = $row['title'];
+        $description = $row['description'];
+        $category = $row['category'];
+    }
+
+
     if($_SERVER["REQUEST_METHOD"] == "POST"){
+        $id = $_POST["id"];
         $title = $_POST['title'];
         $description = addslashes($_POST["description"]);
         $category = $_POST['category'];
@@ -22,13 +42,10 @@ if($_SESSION["id"] == true){
         $file = md5("blog id".$filename).".".$filetype;
 
         do{
-            if(empty($title) || empty($description) || empty($category) || empty($file)){
-                $msg = "All fields are required";
-            }
-            else{
+            if(isset($_FILES['image']['tmp_name']) && !empty($_FILES['image']['tmp_name'])){
                 if($filetype == "jpg" || $filetype == "jpeg" || $filetype == "png"){
                     if(move_uploaded_file($_FILES["image"]["tmp_name"],$target_file)){
-                        $sql = mysqli_query($db, "INSERT INTO `blogs`(`title`, `description`, `image`, `category`, `author`, `blog id`) VALUES ('$title','$description','$file','$category','$name','$blogid')");
+                        $sql = mysqli_query($db, "UPDATE `blogs` SET `title`='$title',`description`='$description',`image`='$file',`category`='$category' WHERE id='$id')");
                         if($sql){
                             $mgs = "Success";
                             header("Location: index.php");
@@ -37,6 +54,7 @@ if($_SESSION["id"] == true){
                         else{
                             $msg = "Something went wrong" . mysqli_error($db);
                         }
+
                     }
                     else{
                         $msg = "Image not Moved";
@@ -44,6 +62,17 @@ if($_SESSION["id"] == true){
                 }
                 else{
                     $msg = "Image Not Accepted";
+                }
+            }
+            else{
+                $sql = mysqli_query($db, "UPDATE `blogs` SET `title`='$title',`description`='$description',`category`='$category' WHERE id='$id')");
+                if($sql){
+                    $mgs = "Success";
+                    header("Location: index.php");
+                    exit;
+                }
+                else{
+                    $msg = "Something went wrong" . mysqli_error($db);
                 }
             }
         }while(false);
@@ -75,7 +104,7 @@ if($_SESSION["id"] == true){
         <!------------- Top Search Bar ---------------------->
         <div class="topbar">
             <div class="name">
-                Welcome Yatheswar
+                Welcome <?php echo $name; ?>
             </div>
             <div class="user">
             <?php
@@ -94,7 +123,7 @@ if($_SESSION["id"] == true){
             </div>
 
             <div class="content">
-                <h2 class="page-title">Create a Blog</h2>
+                <h2 class="page-title">Edit a Blog</h2>
 
                 <?php
 
@@ -109,13 +138,14 @@ if($_SESSION["id"] == true){
         ?>
 
                 <form action="create.php" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="<?php echo $id; ?>">
                     <div>
                         <label>Title</label>
-                        <input type="text" name="title" id="" class="text-input">
+                        <input type="text" name="title" id="" class="text-input" value="<?php echo $title; ?>">
                     </div>
                     <div>
                         <label>Description</label>
-                        <textarea name="description" id="description"></textarea>
+                        <textarea name="description" id="body" rows="10" cols="200">  <?php echo $description; ?>  </textarea>
                     </div>
                     <div>
                         <label>Image</label>
@@ -130,10 +160,10 @@ if($_SESSION["id"] == true){
                     </div> -->
                     <div>
                         <label>Category</label>
-                        <input type="text" name="category" id="category" class="text-input">
+                        <input type="text" name="category" id="category" class="text-input"  value="<?php echo $category; ?>">
                     </div>
                     <div>
-                        <button type="submit" class="admin-btn btn-blg">Add Post</button>
+                        <button type="submit" class="admin-btn btn-blg">Edit Post</button>
                     </div>
                 </form>
 
@@ -146,7 +176,7 @@ if($_SESSION["id"] == true){
     <!----- CkEditor 5 Script -------------------->
     <script src="https://cdn.ckeditor.com/ckeditor5/35.4.0/classic/ckeditor.js"></script>
 
-    <script src="../../js/script.js"></script>
+    <script src="../js/script.js"></script>
 
 </body>
 </html>

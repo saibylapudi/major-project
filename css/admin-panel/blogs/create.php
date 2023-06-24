@@ -8,25 +8,6 @@ if($_SESSION["id"] == true){
     $image = $_SESSION["image"];
 
     require_once('../../config.php');
-
-    $msg = "";
-
-    if($_SERVER["REQUEST_METHOD"] == "GET"){
-        if(!isset($_GET["id"])){
-            header("location: index.php");
-            exit;
-        }
-
-        $id = $_GET["id"];
-        $sql = mysqli_query($db,"SELECT * FROM `blogs` WHERE id=$id");
-        $row = mysqli_fetch_assoc($sql);
-
-        $title = $row['title'];
-        $description = $row['description'];
-        $category = $row['category'];
-    }
-
-
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         $title = $_POST['title'];
         $description = addslashes($_POST["description"]);
@@ -94,7 +75,7 @@ if($_SESSION["id"] == true){
         <!------------- Top Search Bar ---------------------->
         <div class="topbar">
             <div class="name">
-                Welcome Yatheswar
+                Welcome <?php echo $name; ?>
             </div>
             <div class="user">
             <?php
@@ -113,7 +94,7 @@ if($_SESSION["id"] == true){
             </div>
 
             <div class="content">
-                <h2 class="page-title">Edit a Blog</h2>
+                <h2 class="page-title">Create a Blog</h2>
 
                 <?php
 
@@ -130,11 +111,11 @@ if($_SESSION["id"] == true){
                 <form action="create.php" method="post" enctype="multipart/form-data">
                     <div>
                         <label>Title</label>
-                        <input type="text" name="title" id="" class="text-input" value="<?php echo $title; ?>">
+                        <input type="text" name="title" id="" class="text-input">
                     </div>
                     <div>
                         <label>Description</label>
-                        <textarea name="description" id="description" rows="10" cols="200">  <?php echo $description; ?>  </textarea>
+                        <textarea name="description" id="body" rows="10" cols="200"></textarea>
                     </div>
                     <div>
                         <label>Image</label>
@@ -149,7 +130,7 @@ if($_SESSION["id"] == true){
                     </div> -->
                     <div>
                         <label>Category</label>
-                        <input type="text" name="category" id="category" class="text-input"  value="<?php echo $category; ?>">
+                        <input type="text" name="category" id="category" class="text-input">
                     </div>
                     <div>
                         <button type="submit" class="admin-btn btn-blg">Add Post</button>
@@ -165,7 +146,7 @@ if($_SESSION["id"] == true){
     <!----- CkEditor 5 Script -------------------->
     <script src="https://cdn.ckeditor.com/ckeditor5/35.4.0/classic/ckeditor.js"></script>
 
-    <script src="../../js/script.js"></script>
+    <script src="../js/script.js"></script>
 
 </body>
 </html>
